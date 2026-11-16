@@ -2,60 +2,30 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mkushi Boarding - Login</title>
+<title>Mkushi Boarding</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{min-height:100vh;background:#0f3920;display:flex;flex-direction:column}
-.top-bar{background:#0a2e1a;color:white;padding:18px 25px;display:flex;align-items:center;border-bottom:4px solid #d4af37;position:relative;overflow:hidden}
-.top-bar::after{content:'';position:absolute;right:-20px;top:0;width:120px;height:100%;background:#d4af37;transform:skewX(-20deg)}
-.top-logo{width:85px;height:85px;background:white;border-radius:50%;padding:3px;margin-right:15px;z-index:2}
-.top-logo img{width:100%;height:100%;object-fit:contain;border-radius:50%}
-.top-text h1{font-size:15px;letter-spacing:1px;line-height:1.3}
-.top-text p{font-size:12px;color:#d4af37;font-style:italic;margin-top:3px}
-.main{flex:1;background:linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1000');background-size:cover;background-position:center;display:flex;justify-content:center;align-items:center;padding:20px;position:relative}
-.card{background:rgba(255,255,255,0.95);width:100%;max-width:380px;border-radius:22px;padding:28px 22px;box-shadow:0 20px 40px rgba(0,0,0,0.3);backdrop-filter:blur(10px)}
-.card-logo{text-align:center;margin-bottom:12px}
-.card-logo img{width:90px;height:90px;object-fit:contain}
-.divider{height:2px;background:#ddd;margin:10px 40px}
-.card h2{font-size:13px;text-align:center;color:#0a2e1a;letter-spacing:1px;margin-top:12px;line-height:1.4}
-.card h3{font-size:22px;text-align:center;margin:16px 0 4px;font-weight:800}
-.card .sub{font-size:13px;text-align:center;color:#666;margin-bottom:18px}
-.input-box{display:flex;align-items:center;background:white;border:1px solid #ddd;border-radius:30px;padding:12px 16px;margin-bottom:12px}
-.input-box i{margin-right:10px;color:#0a2e1a}
-.input-box input, .input-box select{border:none;outline:none;width:100%;background:transparent;font-size:14px}
-.btn-login{width:100%;background:linear-gradient(#0f4d24,#0a2e1a);color:white;border:none;border-radius:30px;padding:13px;font-size:16px;font-weight:700;margin-top:8px;cursor:pointer}
-.bottom-links{display:flex;justify-content:space-between;font-size:11px;margin-top:16px;color:#0a2e1a}
-.footer{text-align:center;color:#ccc;font-size:11px;padding:18px;letter-spacing:2px;background:#0a2e1a}
-.footer span{color:#d4af37;margin:0 6px}
+.navbar{background:#0a2e1a !important;border-bottom:3px solid #d4af37}
 </style>
 </head>
 <body>
-<div class="top-bar">
-<div class="top-logo"><img src="/static/logo.png.jpg"></div>
-<div class="top-text"><h1>MKUSHI BOARDING<br>SECONDARY SCHOOL BOARD</h1><p>Discipline & Hardwork Lead to Prosperity</p></div>
+<nav class="navbar navbar-dark">
+<div class="container">
+<a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+<img src="/static/logo.png.jpg" style="height:38px;width:38px;background:white;border-radius:50%;padding:2px;margin-right:10px;">
+MKUSHI BOARDING
+</a>
 </div>
-
-<div class="main">
-<div class="card">
-<div class="card-logo"><img src="/static/logo.png.jpg"></div>
-<div class="divider"></div>
-<h2>MKUSHI BOARDING<br>SECONDARY SCHOOL BOARD</h2>
-<div class="divider" style="height:1px;background:#d4af37"></div>
-<h3>Login to Your Account</h3>
-<p class="sub">Access your academic portal</p>
-
-<form method="POST">
-<input type="hidden" name="role" id="roleInput" value="admin">
-<div class="input-box"><i>👤</i><input type="text" name="username" placeholder="Username" required></div>
-<div class="input-box"><i>🔒</i><input type="password" name="password" placeholder="Password" required></div>
-<div class="input-box"><i>🛡️</i><select id="roleSelect" onchange="document.getElementById('roleInput').value=this.value"><option value="admin">Admin</option><option value="teacher">Teacher</option><option value="parent">Parent</option><option value="pupil">Pupil</option></select></div>
-<button class="btn-login">→ Login</button>
-</form>
-
-<div class="bottom-links"><span>🔒 Forgot Password?</span><span>Boarding Portal ↗</span></div>
+</nav>
+<div class="container mt-3">
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }}">{{ message }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+{% block content %}{% endblock %}
 </div>
-</div>
-
-<div class="footer">Discipline <span>•</span> Hardwork <span>•</span> Prosperity</div>
 </body>
 </html>
