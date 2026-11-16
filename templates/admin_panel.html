@@ -1,62 +1,20 @@
-{% extends "base.html" %}
-{% block content %}
-<h2 class="h4 fw-bold mb-3">System Admin Panel — {{ school_name }}</h2>
-<div class="row g-4">
-  <div class="col-lg-5">
-    <div class="card p-4 shadow-sm rounded-4 mb-4">
-      <h3 class="h6 fw-bold mb-3">Add Teacher Account</h3>
-      <form method="post">
-        <input type="hidden" name="action" value="add_teacher" />
-        <div class="mb-2">
-          <input type="text" name="username" class="form-control" placeholder="Teacher username" required />
-        </div>
-        <div class="mb-3">
-          <input type="password" name="password" class="form-control" placeholder="Password (min 4 chars)" minlength="4" required />
-        </div>
-        <button type="submit" class="btn btn-zambia-green w-100">Create Teacher</button>
-      </form>
-    </div>
+{% extends "base.html" %}{% block content %}
+<div class="card">
+<h2>Board Admin - {{session.fullname}}</h2>
 
-    <div class="card p-4 shadow-sm rounded-4">
-      <h3 class="h6 fw-bold mb-3">Add Pupil to Class List</h3>
-      <form method="post">
-        <input type="hidden" name="action" value="add_pupil" />
-        <div class="mb-2"><input type="text" name="full_name" class="form-control" placeholder="Pupil Full Name" required /></div>
-        <div class="mb-2"><input type="text" name="grade" class="form-control" placeholder="Grade (e.g. Grade 10A)" required /></div>
-        <div class="mb-2"><input type="text" name="parent_name" class="form-control" placeholder="Parent Name" required /></div>
-        <div class="mb-3"><input type="tel" name="parent_phone" class="form-control" placeholder="Parent Phone (097xxxxxxx)" required /></div>
-        <button type="submit" class="btn btn-zambia-orange w-100">Add Pupil</button>
-      </form>
-    </div>
-  </div>
+<h3>🎨 School Logo Management (Only Admin)</h3>
+<p>Current logo:</p>
+<img src="/static/logo.png" style="height:80px;border:1px solid #ccc;padding:8px;border-radius:8px" onerror="this.alt='No logo yet'">
 
-  <div class="col-lg-7">
-    <div class="card p-4 shadow-sm rounded-4 mb-4">
-      <h3 class="h6 fw-bold mb-2">Teachers ({{ teachers|length }})</h3>
-      <table class="table table-sm mb-0">
-        <thead><tr><th>Username</th><th>Failed Attempts</th></tr></thead>
-        <tbody>
-          {% for t in teachers %}
-            <tr><td>{{ t.username }}</td><td>{{ t.failed_attempts }}</td></tr>
-          {% else %}
-            <tr><td colspan="2" class="text-muted">No teachers created yet.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div class="card p-4 shadow-sm rounded-4">
-      <h3 class="h6 fw-bold mb-2">Pupil Class Lists ({{ pupils|length }})</h3>
-      <table class="table table-sm mb-0">
-        <thead><tr><th>Name</th><th>Grade</th><th>Parent</th><th>Phone</th></tr></thead>
-        <tbody>
-          {% for p in pupils %}
-            <tr><td>{{ p.full_name }}</td><td>{{ p.grade }}</td><td>{{ p.parent_name }}</td><td>{{ p.parent_phone }}</td></tr>
-          {% else %}
-            <tr><td colspan="4" class="text-muted">No pupils added yet.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
+<form action="/upload_logo" method="post" enctype="multipart/form-data" style="margin-top:14px">
+<input type="file" name="logo" accept="image/*" required>
+<button type="submit" style="padding:8px 16px;background:#667eea;color:white;border:none;border-radius:8px;cursor:pointer">Upload / Change Logo</button>
+</form>
+<p style="font-size:13px;color:#555">Upload PNG/JPG. It will appear for all users instantly.</p>
+</div>
+
+<div class="card">
+<h3>Pupils ({{pupils|length}})</h3>
+{% for p in pupils %} {{p[1]}} - {{p[2]}} - {{p[3]}}<br>{% endfor %}
 </div>
 {% endblock %}
