@@ -1,30 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mkushi Boarding Portal</title>
-<style>
-:root{--dark:#0a5c2e;--mid:#1a9a45;--light:#8ed254;--lime:#b8e986;--black:#111}
-body{margin:0;font-family:system-ui,Segoe UI,Roboto;min-height:100vh;background:radial-gradient(circle at top left,#b8e986 0%, #8ed254 25%, #1a9a45 60%, #0a5c2e 100%);background-attachment:fixed}
-.top{position:sticky;top:0;z-index:10;background:white;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 25px rgba(0,0,0,0.15);border-bottom:4px solid var(--mid)}
-.top b{font-size:17px;color:var(--dark);line-height:1.1}
-.top small{display:block;font-size:10px;color:var(--mid);letter-spacing:0.5px}
-.card{background:white;border-radius:20px;padding:22px;margin:14px auto;max-width:900px;box-shadow:0 12px 40px rgba(0,0,0,0.18);border-left:6px solid var(--mid)}
-input,select{width:100%;padding:13px 16px;margin:7px 0;border:2px solid #d9eeda;border-radius:12px;font-size:15px;box-sizing:border-box;background:#f6fdf7}
-input:focus,select:focus{outline:none;border-color:var(--mid);box-shadow:0 0 0 3px rgba(26,154,69,0.15)}
-button{background:linear-gradient(90deg,var(--dark),var(--mid));color:white;border:none;padding:13px 20px;border-radius:12px;font-weight:800;font-size:15px;width:100%;cursor:pointer;box-shadow:0 6px 18px rgba(10,92,46,0.35);letter-spacing:0.5px}
-.logo-ring{height:42px;width:42px;border-radius:50%;border:2px solid var(--dark);padding:2px;background:white}
-</style>
+    <title>Mkushi Boarding</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="top">
-<div style="display:flex;align-items:center;gap:12px">
-<img src="/static/logo.png" class="logo-ring" onerror="this.style.display='none'">
-<div><b>MKUSHI BOARDING SECONDARY</b><small>DISCIPLINE & HARDWORK LEAD TO PROSPERITY</small></div>
-</div>
-{% if session.username %}<a href="/logout" style="color:var(--dark);font-weight:700">Logout</a>{% endif %}
-</div>
-{% with m=get_flashed_messages() %}{% if m %}<div class="card" style="background:#e8f9e8;border-left-color:var(--light)">{{m[0]}}</div>{% endif %}{% endwith %}
+<nav class="navbar navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <img src="/static/logo.png.jpg" style="height:40px; background:white; border-radius:5px; padding:2px;">
+      MKUSHI BOARDING
+    </a>
+  </div>
+</nav>
+<div class="container mt-4">
 {% block content %}{% endblock %}
+</div>
 </body>
 </html>
