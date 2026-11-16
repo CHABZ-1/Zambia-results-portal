@@ -4,32 +4,28 @@
   <img src="/static/IMG_2053.jpeg" onerror="this.src='/IMG_2053.jpeg'" style="width:92px;height:92px;border-radius:50%;border:3px solid #16a34a;object-fit:cover">
   <h2 style="margin:14px 0 2px 0;font-size:22px">Zafika Portal</h2>
   <p style="margin:0;color:#111827;font-size:13px;font-weight:700">MKUSHI BOARDING SECONDARY SCHOOL</p>
-  <p style="margin:4px 0 18px 0;color:#16a34a;font-size:11px;font-weight:700;letter-spacing:0.5px">DISCIPLINE & HARDWORK LEAD TO PROSPERITY</p>
-
-  <div style="display:flex;gap:6px;margin:16px 0;justify-content:center;flex-wrap:wrap">
+  <p style="margin:4px 0 18px 0;color:#16a34a;font-size:11px;font-weight:700">DISCIPLINE & HARDWORK LEAD TO PROSPERITY</p>
+  <div style="display:flex;gap:6px;margin:16px 0;justify-content:center">
     <button type="button" onclick="setRole('parent')" id="btn-parent" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:20px;background:white;font-size:12px">Parent</button>
     <button type="button" onclick="setRole('pupil')" id="btn-pupil" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:20px;background:white;font-size:12px">Pupil</button>
     <button type="button" onclick="setRole('teacher')" id="btn-teacher" style="padding:7px 12px;border-radius:20px;background:#16a34a;color:white;border:none;font-size:12px;font-weight:600">Teacher</button>
     <button type="button" onclick="setRole('admin')" id="btn-admin" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:20px;background:white;font-size:12px">Admin</button>
   </div>
-
   <form method="POST" action="/login" style="text-align:left;margin-top:10px">
     <input type="hidden" name="role" id="roleInput" value="teacher">
     <label style="font-size:13px;font-weight:600">Username</label>
-    <input type="text" name="username" required placeholder="Enter username" style="width:100%;padding:12px;margin:6px 0 12px 0;border:1px solid #d1d5db;border-radius:10px;box-sizing:border-box;font-size:14px">
+    <input type="text" name="username" required placeholder="Enter username" style="width:100%;padding:12px;margin:6px 0 12px 0;border:1px solid #d1d5db;border-radius:10px;box-sizing:border-box">
     <label style="font-size:13px;font-weight:600">Password</label>
-    <input type="password" name="password" required placeholder="Enter password" style="width:100%;padding:12px;margin:6px 0 18px 0;border:1px solid #d1d5db;border-radius:10px;box-sizing:border-box;font-size:14px">
-    <button type="submit" style="width:100%;padding:13px;background:#111827;color:white;border:none;border-radius:10px;font-weight:700;font-size:15px;letter-spacing:0.3px">Sign In</button>
+    <input type="password" name="password" required placeholder="Enter password" style="width:100%;padding:12px;margin:6px 0 18px 0;border:1px solid #d1d5db;border-radius:10px;box-sizing:border-box">
+    <button type="submit" style="width:100%;padding:13px;background:#111827;color:white;border:none;border-radius:10px;font-weight:700;font-size:15px">Sign In</button>
   </form>
-
   <p style="margin-top:16px;font-size:11px;color:#9ca3af">Secure login • Authorized staff only</p>
 </div>
 <script>
 function setRole(r){
   document.getElementById('roleInput').value=r;
-  document.querySelectorAll('[id^=btn-]').forEach(b=>{b.style.background='white';b.style.color='#111';b.style.border='1px solid #e5e7eb';b.style.fontWeight='400'});
-  let el=document.getElementById('btn-'+r);
-  el.style.background='#16a34a';el.style.color='white';el.style.border='none';el.style.fontWeight='600';
+  document.querySelectorAll('[id^=btn-]').forEach(b=>{b.style.background='white';b.style.color='#111';b.style.border='1px solid #e5e7eb';});
+  let el=document.getElementById('btn-'+r);el.style.background='#16a34a';el.style.color='white';el.style.border='none';
 }
 </script>
 {% endblock %}
