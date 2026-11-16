@@ -1,99 +1,91 @@
-import os, sqlite3
-from flask import Flask, render_template, request, redirect, flash, session, g, send_from_directory
+from flask import Flask, render_template, request, redirect, session
+import sqlite3, os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = "zafika-key-2026"
-DATABASE = "zafika.db"
+app.secret_key = "mkushi2026"
+UPLOAD_FOLDER = "static"
+ALLOWED = {"png","jpg","jpeg"}
+app.config["UPLOAD_FOLDER"]=UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-        db.row_factory = sqlite3.Row
-    return db
-
-@app.teardown_appcontext
-def close_db(exc):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
-
-# init - safe
-try:
-    con = sqlite3.connect(DATABASE)
-    con.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password TEXT, role TEXT)")
-    con.execute("CREATE TABLE IF NOT EXISTS pupils (id INTEGER PRIMARY KEY, full_name TEXT, grade TEXT)")
-    if not con.execute("SELECT id FROM users WHERE username='admin'").fetchone():
-        con.execute("INSERT INTO users VALUES (NULL,'admin','admin123','admin')")
-        con.execute("INSERT INTO users VALUES (NULL,'teacher','teacher123','teacher')")
-    con.commit()
+def init_db():
+    con=sqlite3.connect("mkushi.db"); c=con.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password TEXT, role TEXT, fullname TEXT)")
+    c.execute("CREATE TABLE IF NOT EXISTS pupils (id INTEGER PRIMARY KEY, name TEXT, class TEXT, house TEXT, parent_id INTEGER)")
+    c.execute("CREATE TABLE IF NOT EXISTS results (id INTEGER PRIMARY KEY, pupil_id INTEGER, subject TEXT, score INTEGER, term TEXT)")
+    c.execute("CREATE TABLE IF NOT EXISTS attendance (id INTEGER PRIMARY KEY, pupil_id INTEGER, date TEXT, status TEXT)")
+    c.execute("CREATE TABLE IF NOT EXISTS discipline (id INTEGER PRIMARY KEY, pupil_id INTEGER, note TEXT, date TEXT, type TEXT)")
+    try:
+        c.execute("INSERT INTO users VALUES (NULL,'admin','admin123','admin','Board Admin')")
+        c.execute("INSERT INTO users VALUES (NULL,'teacher1','teach123','teacher','Mr. Banda')")
+        c.execute("INSERT INTO users VALUES (NULL,'parent1','parent123','parent','John Phiri Parent')")
+        c.execute("INSERT INTO users VALUES (NULL,'pupil1','pupil123','pupil','John Phiri Jr')")
+        c.execute("INSERT INTO pupils VALUES (NULL,'John Phiri Jr','Grade 11','Chankamo',3)")
+        con.commit()
+    except: pass
     con.close()
-except Exception as e:
-    print("DB init error", e)
+
+init_db()
 
 @app.route("/")
 def home():
     return redirect("/login")
 
-@app.route("/IMG_2053.jpeg")
-@app.route("/static/IMG_2053.jpeg")
-def logo():
-    if os.path.exists("static/IMG_2053.jpeg"):
-        return send_from_directory("static","IMG_2053.jpeg")
-    if os.path.exists("IMG_2053.jpeg"):
-        return send_from_directory(".","IMG_2053.jpeg")
-    return "", 204
-
 @app.route("/login", methods=["GET","POST"])
 def login():
-    if request.method == "POST":
-        u = request.form.get("username","").strip()
-        p = request.form.get("password","").strip()
-        try:
-            con = get_db()
-            user = con.execute("SELECT * FROM users WHERE username=? AND password=?",(u,p)).fetchone()
-            if user:
-                session["user_id"]=user["id"]
-                session["username"]=user["username"]
-                session["role"]=user["role"]
-                if user["role"]=="admin":
-                    return redirect("/admin/panel")
-                return redirect("/teacher/upload")
-        except Exception as e:
-            print(e)
-        flash("Wrong login","error")
-    try:
-        return render_template("login.html")
-    except Exception as e:
-        return f"<h1>Login</h1><p>Template error: {e}</p><form method=POST><input name=username><input name=password type=password><button>Login</button></form>"
+    if request.method=="POST":
+        u=request.form["username"]; p=request.form["password"]; r=request.form["role"]
+        con=sqlite3.connect("mkushi.db"); c=con.cursor()
+        c.execute("SELECT * FROM users WHERE username=? AND password=? AND role=?",(u,p,r))
+        user=c.fetchone(); con.close()
+        if user:
+            session["username"]=user[1]; session["role"]=user[3]; session["user_id"]=user[0]; session["fullname"]=user[4]
+            return redirect("/dashboard")
+        return render_template("login.html", error="Invalid login")
+    return render_template("login.html")
 
-@app.route("/admin/panel", methods=["GET","POST"])
-def admin_panel():
-    if "user_id" not in session:
-        return redirect("/login")
-    con = get_db()
-    if request.method == "POST":
-        tn = request.form.get("teacher_username") or request.form.get("username")
-        tp = request.form.get("teacher_password") or request.form.get("password")
-        if tn and tp:
-            try:
-                con.execute("INSERT INTO users (username,password,role) VALUES (?,?,?)",(tn.strip(),tp.strip(),"teacher"))
-                con.commit()
-                flash("Teacher "+tn+" created","success")
-            except:
-                flash("Teacher exists","error")
-            return redirect("/admin/panel")
-    teachers = con.execute("SELECT * FROM users WHERE role='teacher'").fetchall()
-    return render_template("admin_panel.html", teachers=teachers, pupils=[])
+@app.route("/dashboard")
+def dashboard():
+    if "username" not in session: return redirect("/login")
+    role=session["role"]; uid=session["user_id"]
+    con=sqlite3.connect("mkushi.db"); c=con.cursor()
+    logo_exists = os.path.exists("static/logo.png")
+    if role=="parent":
+        c.execute("SELECT * FROM pupils WHERE parent_id=?",(uid,)); pupils=c.fetchall()
+        data=[]
+        for pup in pupils:
+            c.execute("SELECT * FROM results WHERE pupil_id=?",(pup[0],)); res=c.fetchall()
+            c.execute("SELECT * FROM attendance WHERE pupil_id=?",(pup[0],)); att=c.fetchall()
+            c.execute("SELECT * FROM discipline WHERE pupil_id=?",(pup[0],)); disc=c.fetchall()
+            data.append({"pupil":pup,"results":res,"attendance":att,"discipline":disc})
+        con.close(); return render_template("parent_dashboard.html", data=data, logo_exists=logo_exists)
+    elif role=="pupil":
+        c.execute("SELECT * FROM pupils WHERE id=1"); pup=c.fetchone()
+        c.execute("SELECT * FROM results WHERE pupil_id=1"); res=c.fetchall()
+        c.execute("SELECT * FROM attendance WHERE pupil_id=1"); att=c.fetchall()
+        c.execute("SELECT * FROM discipline WHERE pupil_id=1"); disc=c.fetchall()
+        con.close(); return render_template("pupil_dashboard.html", pupil=pup, results=res, attendance=att, discipline=disc, logo_exists=logo_exists)
+    elif role=="teacher":
+        c.execute("SELECT * FROM pupils"); pupils=c.fetchall(); con.close()
+        return render_template("teacher_dashboard.html", pupils=pupils, logo_exists=logo_exists)
+    else:
+        c.execute("SELECT * FROM pupils"); pupils=c.fetchall(); con.close()
+        return render_template("admin_dashboard.html", pupils=pupils, logo_exists=logo_exists)
 
-@app.route("/teacher/upload")
-def t_upload():
-    return "<h1>Teacher Upload</h1><a href=/admin/panel>Admin Panel</a> | <a href=/login>Login</a>"
+@app.route("/upload_logo", methods=["POST"])
+def upload_logo():
+    if session.get("role")!="admin": return "Not allowed", 403
+    if "logo" not in request.files: return redirect("/dashboard")
+    file=request.files["logo"]
+    if file.filename=="": return redirect("/dashboard")
+    # Always save as logo.png so all pages see it
+    file.save(os.path.join(app.config["UPLOAD_FOLDER"],"logo.png"))
+    return redirect("/dashboard")
 
 @app.route("/logout")
 def logout():
-    session.clear()
-    return redirect("/login")
+    session.clear(); return redirect("/login")
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+if __name__=="__main__":
+    app.run(debug=True)
