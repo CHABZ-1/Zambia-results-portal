@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card border rounded-4 p-4 bg-white mb-4">
+  <h4 class="fw-bold mb-3">Upload Results (Save as Draft)</h4>
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-md-3"><input name="grade" value="{{ grade }}" class="form-control" /></div>
+    <div class="col-md-3">
+      <select name="term" class="form-select">
+        <option value="Term1" {% if term=='Term1' %}selected{% endif %}>Term1</option>
+        <option value="Term2" {% if term=='Term2' %}selected{% endif %}>Term2</option>
+        <option value="Term3" {% if term=='Term3' %}selected{% endif %}>Term3</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select name="subject_id" class="form-select">
+        {% for s in subjects %}
+          <option value="{{ s.id }}" {% if s.id==subject_id %}selected{% endif %}>{{ s.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3"><button class="btn btn-outline-success w-100">Load Pupils</button></div>
+  </form>
+
+  <form method="post">
+    <input type="hidden" name="grade" value="{{ grade }}" />
+    <input type="hidden" name="term" value="{{ term }}" />
+    <input type="hidden" name="subject_id" value="{{ subject_id }}" />
+    <table class="table table-bordered align-middle">
+      <thead class="table-light"><tr><th>Pupil</th><th>Score (0-100)</th><th>Comment</th><th>Suggestion</th></tr></thead>
+      <tbody>
+        {% for p in pupils %}
+        <tr>
+          <td class="fw-semibold">{{ p.full_name }}</td>
+          <td><input type="number" min="0" max="100" name="score_{{ p.id }}" class="form-control form-control-sm" /></td>
+          <td><input type="text" name="comment_{{ p.id }}" class="form-control form-control-sm" /></td>
+          <td><input type="text" name="suggestion_{{ p.id }}" class="form-control form-control-sm" /></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button class="btn btn-zambia-green">Save as Draft</button>
+  </form>
+</div>
+
+<div class="card border rounded-4 p-4 bg-white">
+  <h5 class="fw-bold mb-2">Bulk CSV Upload (columns: name,score,comment)</h5>
+  <form method="post" enctype="multipart/form-data" class="d-flex gap-2">
+    <input type="hidden" name="grade" value="{{ grade }}" />
+    <input type="hidden" name="term" value="{{ term }}" />
+    <input type="hidden" name="subject_id" value="{{ subject_id }}" />
+    <input type="file" name="csv_file" accept=".csv" class="form-control" required />
+    <button class="btn btn-zambia-orange">Upload CSV</button>
+  </form>
+</div>
+{% endblock %}

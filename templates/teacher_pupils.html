@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card border rounded-4 p-4 bg-white mb-4">
+  <h4 class="fw-bold mb-3">Add Pupil</h4>
+  <form method="post" class="row g-2">
+    <div class="col-md-3"><input name="full_name" class="form-control" placeholder="Full Name" required /></div>
+    <div class="col-md-2"><input name="grade" class="form-control" placeholder="Grade 10A" value="Grade 10A" required /></div>
+    <div class="col-md-3"><input name="parent_name" class="form-control" placeholder="Parent Name" required /></div>
+    <div class="col-md-2"><input name="parent_phone" class="form-control" placeholder="0977123456" required /></div>
+    <div class="col-md-2"><button class="btn btn-zambia-green w-100">Save Pupil</button></div>
+  </form>
+</div>
+
+<div class="card border rounded-4 p-4 bg-white">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0">Pupils List</h4>
+    <form class="d-flex gap-2">
+      <input name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Search by name" />
+      <button class="btn btn-sm btn-outline-success">Search</button>
+    </form>
+  </div>
+  <table class="table table-hover align-middle">
+    <thead><tr><th>Full Name</th><th>Grade</th><th>Parent</th><th>Phone</th><th></th></tr></thead>
+    <tbody>
+      {% for p in pupils %}
+      <tr>
+        <td class="fw-semibold">{{ p.full_name }}</td>
+        <td>{{ p.grade }}</td>
+        <td>{{ p.parent_name }}</td>
+        <td>{{ p.parent_phone }}</td>
+        <td><a href="/teacher/pupil/{{ p.id }}" class="btn btn-sm btn-outline-success">All Terms</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

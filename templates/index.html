@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center py-4">
+  <div class="col-lg-8">
+    <div class="card border shadow-sm rounded-4 p-4 p-md-5 bg-white">
+      <p class="text-success fw-semibold mb-1">{{ school_name }}</p>
+      <h1 class="display-5 fw-bold mb-3">Zafika — Results Zafika</h1>
+      <p class="text-secondary mb-4">
+        Official termly results portal for {{ school_name }}. Parents check results using only their child's name, grade, and registered phone number.
+      </p>
+      <div class="d-grid gap-3">
+        <a href="/login?role=parent" class="btn btn-lg btn-zambia-green fw-semibold py-3">
+          Parent — Check Results
+        </a>
+        <a href="/login?role=pupil" class="btn btn-lg btn-zambia-orange fw-semibold py-3">
+          Pupil — Check Results
+        </a>
+        <a href="/login?role=teacher" class="btn btn-lg btn-outline-dark fw-semibold py-3">
+          Teacher Login
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

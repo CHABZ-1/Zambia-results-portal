@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="h3 fw-bold mb-4">{{ school_name }} — Teacher Dashboard</h2>
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card border rounded-4 p-4 bg-white">
+      <p class="text-muted mb-1">Total Pupils</p>
+      <p class="display-6 fw-bold mb-2">{{ total_pupils }}</p>
+      <a href="/teacher/pupils" class="text-success fw-semibold text-decoration-none">Manage Pupils →</a>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card border rounded-4 p-4 bg-white">
+      <p class="text-muted mb-1">Pending to Publish</p>
+      <p class="display-6 fw-bold text-warning-emphasis mb-2">{{ pending }}</p>
+      <a href="/teacher/publish" class="text-warning-emphasis fw-semibold text-decoration-none">Publish &amp; Send SMS →</a>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card border rounded-4 p-4 bg-white">
+      <p class="text-muted mb-1">SMS Sent Today</p>
+      <p class="display-6 fw-bold text-success mb-2">{{ sms_today }}</p>
+      <a href="/teacher/sms-log" class="text-success fw-semibold text-decoration-none">View SMS Log →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

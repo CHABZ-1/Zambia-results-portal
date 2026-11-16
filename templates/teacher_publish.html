@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card border rounded-4 p-4 bg-white">
+  <h4 class="fw-bold mb-3">Publish Results &amp; Send SMS</h4>
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-md-3">
+      <select name="term" class="form-select">
+        <option value="Term1" {% if term=='Term1' %}selected{% endif %}>Term1</option>
+        <option value="Term2" {% if term=='Term2' %}selected{% endif %}>Term2</option>
+        <option value="Term3" {% if term=='Term3' %}selected{% endif %}>Term3</option>
+      </select>
+    </div>
+    <div class="col-md-3"><input name="grade" value="{{ grade }}" class="form-control" /></div>
+    <div class="col-md-2"><button class="btn btn-outline-success w-100">Filter</button></div>
+  </form>
+
+  <form method="post">
+    <input type="hidden" name="term" value="{{ term }}" />
+    <input type="hidden" name="grade" value="{{ grade }}" />
+    <table class="table table-bordered align-middle">
+      <thead class="table-light"><tr><th>Publish</th><th>Pupil</th><th>Subject</th><th>Score</th><th>Grade</th><th>Parent Phone</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td><input type="checkbox" name="result_ids" value="{{ r.id }}" {% if not r.published %}checked{% endif %} /></td>
+          <td class="fw-semibold">{{ r.full_name }}</td>
+          <td>{{ r.subject_name }}</td>
+          <td>{{ r.score }}%</td>
+          <td>{{ r.grade_letter }}</td>
+          <td>{{ r.parent_phone }}</td>
+          <td>{{ 'Published' if r.published else 'Draft' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button class="btn btn-zambia-green btn-lg">Publish &amp; Send SMS</button>
+  </form>
+</div>
+{% endblock %}

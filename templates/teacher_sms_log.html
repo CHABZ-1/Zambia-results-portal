@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card border rounded-4 p-4 bg-white">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0">SMS Log ({{ school_name }})</h4>
+    <form class="d-flex gap-2">
+      <input name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Search phone or message" />
+      <button class="btn btn-sm btn-outline-success">Search</button>
+    </form>
+  </div>
+  <table class="table table-striped">
+    <thead><tr><th>To</th><th>Message</th><th>Time</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for l in logs %}
+      <tr>
+        <td class="fw-semibold">{{ l.to_phone }}</td>
+        <td>{{ l.message }}</td>
+        <td class="small">{{ l.time }}</td>
+        <td><span class="badge bg-success">{{ l.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

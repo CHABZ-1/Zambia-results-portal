@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+{% if latest_sms %}
+<div class="alert alert-success no-print">
+  SMS sent to <strong>{{ latest_sms.to_phone }}</strong> on {{ latest_sms.time }}
+</div>
+{% endif %}
+
+<div class="card border rounded-4 p-4 bg-white mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h2 class="h3 fw-bold mb-0">{{ pupil.full_name }}</h2>
+      <p class="text-muted mb-0">{{ pupil.grade }} · {{ school_name }}</p>
+    </div>
+    <button onclick="window.print()" class="btn btn-outline-success no-print">Print Report</button>
+  </div>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered align-middle">
+      <thead class="table-light">
+        <tr><th>Term</th><th>Subject</th><th>Score</th><th>Grade</th><th>Teacher Comment</th><th>Suggestion</th></tr>
+      </thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td>{{ r.term }}</td>
+          <td class="fw-semibold">{{ r.subject_name }}</td>
+          <td>{{ r.score }}%</td>
+          <td class="fw-bold">{{ r.grade_letter }}</td>
+          <td>{{ r.teacher_comment }}</td>
+          <td>{{ r.teacher_suggestion }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="p-3 box-comment-green">
+        <h5 class="fw-bold text-success">Teacher Comment</h5>
+        {% for r in results %}
+          <p class="small mb-1"><strong>{{ r.subject_name }}:</strong> {{ r.teacher_comment }}</p>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="p-3 box-suggestion-orange">
+        <h5 class="fw-bold text-warning-emphasis">What parent should do at home</h5>
+        {% for r in results %}
+          <p class="small mb-1"><strong>{{ r.subject_name }}:</strong> {{ r.teacher_suggestion }}</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border rounded-4 p-4 bg-white">
+  <h5 class="fw-bold mb-3">Scores Across Terms</h5>
+  <canvas id="progressChart" height="100"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const rows = {{ results | map(attribute='score') | list | tojson }};
+const labels = {{ results | map(attribute='subject_name') | list | tojson }};
+new Chart(document.getElementById('progressChart'), {
+  type: 'bar',
+  data: { labels, datasets: [{ label: 'Score (%)', data: rows, backgroundColor: '#0b6e3e' }] },
+  options: { scales: { y: { min: 0, max: 100 } } }
+});
+</script>
+{% endblock %}

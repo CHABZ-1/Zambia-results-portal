@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center py-3">
+  <div class="col-md-7 col-lg-5">
+    <div class="card border shadow-sm rounded-4 p-4 bg-white">
+      <h2 class="h4 fw-bold mb-1">Zafika Portal Sign In</h2>
+      <p class="text-muted small mb-3">{{ school_name }}</p>
+
+      <ul class="nav nav-pills nav-fill mb-4">
+        <li class="nav-item">
+          <a class="nav-link {% if active_role == 'parent' %}active bg-success{% endif %}" href="/login?role=parent">Parent</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if active_role == 'pupil' %}active bg-warning text-dark{% endif %}" href="/login?role=pupil">Pupil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if active_role == 'teacher' %}active bg-dark{% endif %}" href="/login?role=teacher">Teacher</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if active_role == 'admin' %}active bg-success{% endif %}" href="/login?role=admin">Admin</a>
+        </li>
+      </ul>
+
+      {% if active_role == 'parent' %}
+      <form method="post" autocomplete="off">
+        <input type="hidden" name="role" value="parent" />
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Child Full Name</label>
+          <input type="text" name="child_name" autocomplete="off" class="form-control form-control-lg" placeholder="Enter child's full name" required />
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Grade</label>
+          <select name="grade" class="form-select form-select-lg">
+            {% for g in grades %}
+              <option value="{{ g }}">{{ g }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Parent Phone Number</label>
+          <input type="tel" name="parent_phone" autocomplete="off" class="form-control form-control-lg" placeholder="097xxxxxxx" required />
+        </div>
+        <button type="submit" class="btn btn-zambia-green btn-lg w-100 fw-semibold">View Results</button>
+      </form>
+      {% elif active_role == 'pupil' %}
+      <form method="post" autocomplete="off">
+        <input type="hidden" name="role" value="pupil" />
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Child Full Name</label>
+          <input type="text" name="child_name" autocomplete="off" class="form-control form-control-lg" placeholder="Enter your full name" required />
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <label class="form-label fw-semibold">Grade</label>
+            <select name="grade_level" class="form-select form-select-lg">
+              <option>Grade 8</option><option>Grade 9</option><option selected>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="form-label fw-semibold">Class</label>
+            <select name="class_section" class="form-select form-select-lg">
+              <option selected>A</option><option>B</option><option>C</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-zambia-orange btn-lg w-100 fw-semibold">Check My Results</button>
+      </form>
+      {% else %}
+      <form method="post">
+        <input type="hidden" name="role" value="{{ 'admin' if active_role == 'admin' else 'teacher' }}" />
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Username</label>
+          <input type="text" name="username" class="form-control form-control-lg" placeholder="Enter username" required />
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Password</label>
+          <input type="password" name="password" class="form-control form-control-lg" placeholder="Enter password" required />
+        </div>
+        <button type="submit" class="btn btn-dark btn-lg w-100 fw-semibold">Sign In</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

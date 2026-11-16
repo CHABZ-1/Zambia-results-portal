@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+{% if has_grade_a %}
+<div class="alert alert-success fw-semibold">
+  Well done! You earned Grade A — Discipline &amp; Hardwork Lead to Prosperity!
+</div>
+{% endif %}
+<div class="card border rounded-4 p-4 bg-white">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h2 class="h3 fw-bold mb-0">Your Results — {{ pupil.full_name }}</h2>
+      <p class="text-muted mb-0">{{ pupil.grade }} · {{ school_name }}</p>
+    </div>
+    <button onclick="window.print()" class="btn btn-outline-success no-print">Print</button>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr><th>Term</th><th>Subject</th><th>Score</th><th>Grade</th><th>Teacher Comment</th><th>Suggestion</th></tr>
+      </thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td>{{ r.term }}</td>
+          <td class="fw-semibold">{{ r.subject_name }}</td>
+          <td>{{ r.score }}%</td>
+          <td class="fw-bold">{{ r.grade_letter }}</td>
+          <td>{{ r.teacher_comment }}</td>
+          <td>{{ r.teacher_suggestion }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

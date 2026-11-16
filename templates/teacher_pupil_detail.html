@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card border rounded-4 p-4 bg-white mb-4">
+  <h3 class="fw-bold">{{ pupil.full_name }} ({{ pupil.grade }})</h3>
+  <p class="text-muted mb-0">Parent: {{ pupil.parent_name }} · {{ pupil.parent_phone }}</p>
+</div>
+{% for term in ['Term1', 'Term2', 'Term3'] %}
+<div class="card border rounded-4 p-4 bg-white mb-3">
+  <h5 class="fw-bold">{{ term }}</h5>
+  <table class="table table-sm">
+    <thead><tr><th>Subject</th><th>Score</th><th>Grade</th><th>Comment</th><th>Published</th></tr></thead>
+    <tbody>
+      {% for r in results if r.term == term %}
+      <tr><td>{{ r.subject_name }}</td><td>{{ r.score }}%</td><td>{{ r.grade_letter }}</td><td>{{ r.teacher_comment }}</td><td>{{ 'Yes' if r.published else 'Draft' }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <form method="post" class="d-flex gap-2 mt-2">
+    <input type="hidden" name="term" value="{{ term }}" />
+    <input name="general_comment" class="form-control" placeholder="General comment for {{ term }}" />
+    <button class="btn btn-zambia-green">Save</button>
+  </form>
+</div>
+{% endfor %}
+{% endblock %}
