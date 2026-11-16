@@ -2,39 +2,33 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mkushi Boarding</title>
+<title>Mkushi Boarding Portal</title>
 <style>
-body { margin:0; font-family:Arial; background:#f3f4f6; position:relative; min-height:100vh; }
-body::after {
-  content:"";
-  position:fixed; top:0; left:0; right:0; bottom:0;
-  background-image: url('/static/IMG_2053.jpeg');
-  background-repeat:no-repeat; background-position:center; background-size:380px;
-  opacity:0.08; pointer-events:none; z-index:-1;
-}
-.topbar { background:white; padding:10px 15px; display:flex; align-items:center; gap:12px; border-bottom:3px solid #16a34a; position:sticky; top:0; z-index:10; }
-.topbar img { width:50px; height:50px; border-radius:50%; border:2px solid #16a34a; object-fit:cover; }
-.topbar h2 { margin:0; font-size:16px; line-height:1.2; }
-.topbar small { color:#16a34a; font-weight:bold; }
-.container { padding:10px; }
-.flash.success { background:#dcfce7; padding:10px; margin:10px; border-radius:6px; }
-.flash.error { background:#fee2e2; padding:10px; margin:10px; border-radius:6px; }
+body{margin:0;font-family:Arial;background:#f5f6f8;min-height:100vh;position:relative}
+body::after{content:"";position:fixed;inset:0;background-image:url('/static/IMG_2053.jpeg');background-repeat:no-repeat;background-position:center;background-size:420px;opacity:0.06;pointer-events:none;z-index:-1}
+.topbar{background:#fff;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:4px solid #16a34a;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.topbar img{width:54px;height:54px;border-radius:50%;border:2.5px solid #16a34a;object-fit:cover;background:#fff}
+.topbar h2{margin:0;font-size:15px;line-height:1.15;letter-spacing:0.2px}
+.topbar small{color:#16a34a;font-weight:800;font-size:12px;letter-spacing:0.5px}
+.container{padding:12px;max-width:1100px;margin:0 auto}
+.flash{padding:10px 12px;margin:10px 0;border-radius:8px;font-size:14px}
+.flash.success{background:#dcfce7;color:#14532d;border:1px solid #86efac}
+.flash.error{background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca}
 </style>
 </head>
 <body>
 <div class="topbar">
-  <img src="/static/IMG_2053.jpeg" alt="logo" onerror="this.src='/IMG_2053.jpeg'">
+  <img src="/static/IMG_2053.jpeg" onerror="this.src='/IMG_2053.jpeg'">
   <div>
     <h2>MKUSHI BOARDING<br>SECONDARY SCHOOL</h2>
-    <small>DISCIPLINE & HARDWORK</small>
+    <small>DISCIPLINE & HARDWORK LEAD TO PROSPERITY</small>
   </div>
-  <div style="margin-left:auto;">
-    {% if session.username %}<a href="/logout" style="text-decoration:none;background:#111;color:white;padding:6px 12px;border-radius:6px;font-size:13px;">Logout</a>{% endif %}
+  <div style="margin-left:auto">
+    {% if session.username %}<a href="/logout" style="text-decoration:none;background:#111827;color:white;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600">Logout</a>{% endif %}
   </div>
 </div>
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}{% for c,m in messages %}<div class="flash {{c}}">{{m}}</div>{% endfor %}{% endif %}
-{% endwith %}
+{% with m=get_flashed_messages(with_categories=true) %}{% if m %}{% for c,msg in m %}<div class="container"><div class="flash {{c}}">{{msg}}</div></div>{% endfor %}{% endif %}{% endwith %}
 <div class="container">{% block content %}{% endblock %}</div>
+<div style="text-align:center;padding:20px;color:#9ca3af;font-size:11px">© 2026 Mkushi Boarding Secondary School Board - Secure Academic Portal</div>
 </body>
 </html>
