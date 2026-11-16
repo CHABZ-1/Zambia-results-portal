@@ -1,39 +1,51 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card border rounded-4 p-4 bg-white">
-  <h4 class="fw-bold mb-3">Publish Results &amp; Send SMS</h4>
-  <form method="get" class="row g-2 mb-3">
-    <div class="col-md-3">
-      <select name="term" class="form-select">
-        <option value="Term1" {% if term=='Term1' %}selected{% endif %}>Term1</option>
-        <option value="Term2" {% if term=='Term2' %}selected{% endif %}>Term2</option>
-        <option value="Term3" {% if term=='Term3' %}selected{% endif %}>Term3</option>
-      </select>
-    </div>
-    <div class="col-md-3"><input name="grade" value="{{ grade }}" class="form-control" /></div>
-    <div class="col-md-2"><button class="btn btn-outline-success w-100">Filter</button></div>
-  </form>
+<div style="padding:15px;max-width:600px;margin:auto;">
+<h3>Publish - Last Teacher Check</h3>
 
-  <form method="post">
-    <input type="hidden" name="term" value="{{ term }}" />
-    <input type="hidden" name="grade" value="{{ grade }}" />
-    <table class="table table-bordered align-middle">
-      <thead class="table-light"><tr><th>Publish</th><th>Pupil</th><th>Subject</th><th>Score</th><th>Grade</th><th>Parent Phone</th><th>Status</th></tr></thead>
-      <tbody>
-        {% for r in results %}
-        <tr>
-          <td><input type="checkbox" name="result_ids" value="{{ r.id }}" {% if not r.published %}checked{% endif %} /></td>
-          <td class="fw-semibold">{{ r.full_name }}</td>
-          <td>{{ r.subject_name }}</td>
-          <td>{{ r.score }}%</td>
-          <td>{{ r.grade_letter }}</td>
-          <td>{{ r.parent_phone }}</td>
-          <td>{{ 'Published' if r.published else 'Draft' }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <button class="btn btn-zambia-green btn-lg">Publish &amp; Send SMS</button>
-  </form>
+<form method="GET" style="margin-bottom:15px;">
+<select name="grade" onchange="this.form.submit()">
+{% for g in ["Grade 8A","Grade 8B","Grade 9A","Grade 9B","Grade 10A","Grade 10B","Grade 11A","Grade 12A"] %}
+<option value="{{g}}" {% if g==grade %}selected{% endif %}>{{g}}</option>
+{% endfor %}
+</select>
+<select name="term" onchange="this.form.submit()">
+<option value="Term1" {% if term=="Term1" %}selected{% endif %}>Term1</option>
+<option value="Term2" {% if term=="Term2" %}selected{% endif %}>Term2</option>
+<option value="Term3" {% if term=="Term3" %}selected{% endif %}>Term3</option>
+</select>
+</form>
+
+<div style="background:white;padding:12px;border-radius:8px;margin-bottom:15px;">
+<h4 style="margin:0 0 10px 0;">Progress for {{grade}} {{term}}</h4>
+{% for s in progress %}
+<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;">
+<span>{% if s.count>0 %}✅{% else %}❌{% endif %} {{s.name}}</span>
+<span>{{s.count}}/{{total_pupils}}</span>
+</div>
+{% endfor %}
+</div>
+
+{% if progress|selectattr('count','equalto',0)|list|length == 0 %}
+<div style="background:#dcfce7;padding:12px;border-radius:8px;border:1px solid #16a34a;margin-bottom:15px;">
+<strong style="color:#16a34a;">All subjects entered! Ready to publish.</strong>
+</div>
+{% endif %}
+
+<form method="POST" action="/teacher/publish-all">
+<input type="hidden" name="grade" value="{{grade}}">
+<input type="hidden" name="term" value="{{term}}">
+
+<label style="display:flex;align-items:center;gap:10px;padding:12px;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;margin-bottom:12px;">
+<input type="checkbox" name="is_last" value="1" required style="width:20px;height:20px;">
+<span><b>I am the LAST teacher.</b> Tick to confirm all marks checked. Publish ALL subjects together.</span>
+</label>
+
+<button type="submit" style="width:100%;padding:14px;background:#dc2626;color:white;border:none;border-radius:8px;font-weight:bold;font-size:16px;">
+🚀 PUBLISH ALL RESULTS - Send SMS to Parents
+</button>
+</form>
+
+<p style="text-align:center;color:#666;font-size:13px;margin-top:12px;">Publishing will make results visible to parents for {{grade}} {{term}} and send ONE SMS per pupil.</p>
 </div>
 {% endblock %}
