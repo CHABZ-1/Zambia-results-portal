@@ -1,36 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
 <div style="padding:15px;max-width:600px;margin:auto;">
-<h3>Publish - Last Teacher Check</h3>
+<h3>Publish - Last Teacher</h3>
 <form method="GET" style="display:flex;gap:8px;margin-bottom:15px;">
-<select name="grade" onchange="this.form.submit()" style="padding:8px;flex:1;">
-{% for g in ["Grade 8A","Grade 8B","Grade 9A","Grade 9B","Grade 10A","Grade 10B","Grade 11A","Grade 12A"] %}
-<option value="{{g}}" {% if g==grade %}selected{% endif %}>{{g}}</option>
-{% endfor %}
-</select>
-<select name="term" onchange="this.form.submit()" style="padding:8px;flex:1;">
-<option value="Term1" {% if term=="Term1" %}selected{% endif %}>Term1</option>
-<option value="Term2" {% if term=="Term2" %}selected{% endif %}>Term2</option>
-<option value="Term3" {% if term=="Term3" %}selected{% endif %}>Term3</option>
-</select>
+<select name="grade" onchange="this.form.submit()"><option>Grade 10A</option><option>Grade 11A</option><option>Grade 12A</option></select>
+<select name="term" onchange="this.form.submit()"><option>Term1</option><option selected>Term2</option><option>Term3</option></select>
 </form>
-<div style="background:white;padding:12px;border-radius:10px;margin-bottom:15px;">
-<h4 style="margin:0 0 10px 0;">Progress for {{grade}} {{term}} ({{total_pupils}} pupils)</h4>
+<div style="background:white;padding:12px;border-radius:8px;margin-bottom:15px;">
 {% for s in progress %}
-<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;">
-<span>{% if s.count>0 %}✅{% else %}❌{% endif %} {{s.name}}</span>
-<span><b>{{s.count}}/{{total_pupils}}</b></span>
-</div>
+<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;"><span>{% if s.count>0 %}✅{% else %}❌{% endif %} {{s.name}}</span><span>{{s.count}}/{{total_pupils}}</span></div>
 {% endfor %}
 </div>
 <form method="POST" action="/teacher/publish-all">
 <input type="hidden" name="grade" value="{{grade}}">
 <input type="hidden" name="term" value="{{term}}">
-<label style="display:flex;gap:10px;padding:14px;background:#fffbeb;border:2px solid #f59e0b;border-radius:10px;margin-bottom:12px;">
-<input type="checkbox" name="is_last" value="1" required style="width:22px;height:22px;">
-<span><b>I am LAST teacher</b> - Tick to publish ALL subjects together</span>
-</label>
-<button type="submit" style="width:100%;padding:14px;background:#dc2626;color:white;border:none;border-radius:10px;font-weight:bold;">PUBLISH ALL RESULTS</button>
+<label style="display:flex;gap:10px;padding:12px;background:#fffbeb;border:2px solid #f59e0b;border-radius:8px;margin-bottom:12px;"><input type="checkbox" name="is_last" value="1" required><span><b>I am LAST teacher</b> - Publish all subjects together</span></label>
+<button type="submit" style="width:100%;padding:14px;background:#dc2626;color:white;border:none;border-radius:8px;">PUBLISH ALL RESULTS</button>
 </form>
 </div>
 {% endblock %}
