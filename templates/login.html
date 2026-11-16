@@ -1,1 +1,16 @@
-{% extends "base.html" %}{% block content %}<div class="card" style="max-width:360px;margin:60px auto"><h3>Login</h3>{% if error %}<p style="color:red">{{error}}</p>{% endif %}<form method="post"><input name="username" placeholder="Username" required style="width:100%;padding:9px;margin:5px 0"><input type="password" name="password" placeholder="Password" required style="width:100%;padding:9px;margin:5px 0"><select name="role" style="width:100%;padding:9px;margin:5px 0"><option value="admin">Admin</option><option value="teacher">Teacher</option><option value="parent">Parent</option><option value="pupil">Pupil</option></select><button style="width:100%;padding:10px;background:#667eea;color:#fff;border:none;border-radius:8px">Login</button></form><p><a href="/forgot">Forgot?</a></p></div>{% endblock %}
+{% extends "base.html" %}{% block content %}
+<div class="card" style="max-width:420px;margin:30px auto;text-align:center;border-left:0;border-top:6px solid var(--mid)">
+<div style="margin-bottom:20px">
+<img src="/static/logo.png" style="height:110px;width:110px;object-fit:cover;border-radius:50%;border:4px solid var(--dark);box-shadow:0 10px 30px rgba(0,0,0,0.2);background:white" onerror="this.style.display='none'">
+<h1 style="margin:14px 0 2px;color:var(--dark);font-size:24px;line-height:1">MKUSHI BOARDING<br>SECONDARY SCHOOL BOARD</h1>
+<p style="background:var(--dark);color:var(--lime);display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;margin-top:10px;font-weight:800;letter-spacing:0.5px">DISCIPLINE & HARDWORK LEAD TO PROSPERITY</p>
+</div>
+<form method="post">
+<input name="username" placeholder="Username" required>
+<input type="password" name="password" placeholder="Password" required>
+<select name="role"><option>Admin</option><option>Teacher</option><option>Parent</option><option>Pupil</option></select>
+<button style="margin-top:12px">🔓 Login</button>
+</form>
+<div style="margin-top:16px;font-size:13px;display:flex;justify-content:space-between"><a href="/forgot" style="color:var(--mid)">Forgot Password?</a><span style="color:#999">Boarding Portal</span></div>
+</div>
+{% endblock %}
