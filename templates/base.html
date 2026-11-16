@@ -1,28 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Mkushi Boarding Portal</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body{
-  margin:0; font-family:Segoe UI, sans-serif;
-  /* COLORFUL SA STYLE BACKGROUND */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
-  min-height:100vh; background-attachment:fixed;
-}
-.topbar{background:white;display:flex;align-items:center;padding:10px 18px;box-shadow:0 2px 12px rgba(0,0,0,.15)}
-.topbar img{height:42px;margin-right:12px}
-.card{background:rgba(255,255,255,.95);padding:20px;border-radius:16px;margin:16px;box-shadow:0 8px 32px rgba(0,0,0,.15)}
-</style>
-</head>
-<body>
-<div class="topbar">
-{% if logo_exists or True %}
-<img src="/static/logo.png" onerror="this.style.display='none'" alt="logo">
-{% endif %}
-<b>Mkushi Boarding Secondary - Board Portal</b>
-<a href="/logout" style="margin-left:auto;text-decoration:none">Logout</a>
-</div>
-{% block content %}{% endblock %}
-</body>
-</html>
+<!DOCTYPE html><html><head><title>Mkushi</title><meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{margin:0;font-family:sans-serif;background:linear-gradient(135deg,#667eea,#764ba2,#f093fb,#f5576c,#4facfe);min-height:100vh;background-attachment:fixed}.topbar{background:#fff;padding:10px 16px;display:flex;align-items:center}.topbar img{height:38px;margin-right:8px}.card{background:rgba(255,255,255,.95);padding:18px;border-radius:14px;margin:14px}</style>
+</head><body><div class="topbar"><img src="/static/logo.png" onerror="this.style.display='none'"><b>Mkushi Boarding Portal</b><a href="/logout" style="margin-left:auto">Logout</a></div>{% block content %}{% endblock %}</body></html>
