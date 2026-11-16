@@ -1,38 +1,29 @@
 {% extends "base.html" %}{% block content %}
 <div class="card">
-<h2>Board Admin - {{session.fullname}}</h2>
-<h3>🎨 School Logo - Admin Only</h3>
-<img src="/static/logo.png" style="height:70px;border:1px solid #ccc;padding:6px" onerror="this.alt='No logo yet'">
-<form action="/upload_logo" method="post" enctype="multipart/form-data">
-<input type="file" name="logo" accept="image/*" required>
-<button type="submit">Upload Logo</button>
+<h2 style="color:var(--dark)">Board Admin - {{session.fullname}}</h2>
+<div style="display:flex;align-items:center;gap:15px;margin:12px 0">
+<img src="/static/logo.png" style="height:70px;width:70px;border-radius:50%;border:3px solid var(--dark);background:white" onerror="this.alt='No logo yet'">
+<div>
+<h3 style="margin:0;color:var(--dark)">School Logo - Admin Only</h3>
+<small>Upload your Mkushi logo here. It will show on login & everywhere</small>
+</div>
+</div>
+<form action="/upload_logo" method="post" enctype="multipart/form-data" style="display:flex;gap:8px">
+<input type="file" name="logo" accept="image/*" required style="flex:1">
+<button type="submit" style="width:auto">Upload Logo</button>
 </form>
 <br>
-<a href="/change_password" style="padding:8px 14px;background:#667eea;color:white;border-radius:8px;text-decoration:none">Change My Password</a>
+<a href="/change_password" style="padding:10px 18px;background:var(--dark);color:white;border-radius:10px;text-decoration:none;font-weight:700">Change My Password</a>
 </div>
 
 <div class="card">
-<h3>All Users - Reset Password + Email from chabotamichelo17@gmail.com</h3>
-<table border="1" cellpadding="8" style="width:100%;background:white">
-<tr><th>Username</th><th>Role</th><th>Email</th><th>Reset & Send Email</th></tr>
+<h3>Reset Password + Email from chabotamichelo17@gmail.com</h3>
+<table>
+<tr><th>Username</th><th>Role</th><th>Email</th><th>Reset</th></tr>
 {% for u in users %}
-<tr>
-<td>{{u[1]}}</td><td>{{u[3]}}</td><td>{{u[5]}}</td>
-<td>
-<form action="/admin/reset/{{u[0]}}" method="post" style="display:flex;gap:5px">
-<input type="text" name="new_password" placeholder="new password" required>
-<button type="submit">Reset & Email</button>
-</form>
-</td>
-</tr>
+<tr><td>{{u[1]}}</td><td>{{u[3]}}</td><td>{{u[5]}}</td>
+<td><form action="/admin/reset/{{u[0]}}" method="post" style="display:flex;gap:5px"><input name="new_password" placeholder="new pass" required><button style="width:auto">Reset & Email</button></form></td></tr>
 {% endfor %}
 </table>
-</div>
-
-<div class="card">
-<h3>Pupils List</h3>
-{% for p in pupils %}
-{{p[1]}} - Class: {{p[2]}} - House: {{p[3]}}<br>
-{% endfor %}
 </div>
 {% endblock %}
