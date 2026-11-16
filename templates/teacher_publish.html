@@ -1,51 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
-<div style="padding:15px;max-width:600px;margin:auto;">
-<h3>Publish - Last Teacher Check</h3>
+<div style="padding:15px;max-width:600px;margin:auto;font-family:Arial;">
+<h3 style="margin-bottom:10px;">Publish - Last Teacher Check</h3>
 
-<form method="GET" style="margin-bottom:15px;">
-<select name="grade" onchange="this.form.submit()">
+<form method="GET" style="display:flex;gap:8px;margin-bottom:15px;">
+<select name="grade" onchange="this.form.submit()" style="padding:8px;border-radius:6px;flex:1;">
 {% for g in ["Grade 8A","Grade 8B","Grade 9A","Grade 9B","Grade 10A","Grade 10B","Grade 11A","Grade 12A"] %}
 <option value="{{g}}" {% if g==grade %}selected{% endif %}>{{g}}</option>
 {% endfor %}
 </select>
-<select name="term" onchange="this.form.submit()">
+<select name="term" onchange="this.form.submit()" style="padding:8px;border-radius:6px;flex:1;">
 <option value="Term1" {% if term=="Term1" %}selected{% endif %}>Term1</option>
 <option value="Term2" {% if term=="Term2" %}selected{% endif %}>Term2</option>
 <option value="Term3" {% if term=="Term3" %}selected{% endif %}>Term3</option>
 </select>
 </form>
 
-<div style="background:white;padding:12px;border-radius:8px;margin-bottom:15px;">
-<h4 style="margin:0 0 10px 0;">Progress for {{grade}} {{term}}</h4>
+<div style="background:white;padding:12px;border-radius:10px;margin-bottom:15px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+<h4 style="margin:0 0 10px 0;font-size:15px;">Progress for {{grade}} {{term}} ({{total_pupils}} pupils)</h4>
 {% for s in progress %}
-<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;">
+<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:14px;">
 <span>{% if s.count>0 %}✅{% else %}❌{% endif %} {{s.name}}</span>
-<span>{{s.count}}/{{total_pupils}}</span>
+<span style="font-weight:bold;">{{s.count}}/{{total_pupils}}</span>
 </div>
 {% endfor %}
 </div>
 
-{% if progress|selectattr('count','equalto',0)|list|length == 0 %}
-<div style="background:#dcfce7;padding:12px;border-radius:8px;border:1px solid #16a34a;margin-bottom:15px;">
-<strong style="color:#16a34a;">All subjects entered! Ready to publish.</strong>
-</div>
+{% if progress %}
+  {% set missing = progress|selectattr('count','equalto',0)|list|length %}
+  {% if missing == 0 %}
+  <div style="background:#dcfce7;padding:12px;border-radius:8px;border:1px solid #16a34a;margin-bottom:15px;text-align:center;">
+  <strong style="color:#16a34a;">🎉 All subjects entered! Ready to publish.</strong>
+  </div>
+  {% else %}
+  <div style="background:#fef3c7;padding:10px;border-radius:8px;margin-bottom:15px;text-align:center;font-size:13px;">
+  Waiting for {{missing}} subject(s) still.
+  </div>
+  {% endif %}
 {% endif %}
 
 <form method="POST" action="/teacher/publish-all">
 <input type="hidden" name="grade" value="{{grade}}">
 <input type="hidden" name="term" value="{{term}}">
 
-<label style="display:flex;align-items:center;gap:10px;padding:12px;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;margin-bottom:12px;">
-<input type="checkbox" name="is_last" value="1" required style="width:20px;height:20px;">
-<span><b>I am the LAST teacher.</b> Tick to confirm all marks checked. Publish ALL subjects together.</span>
+<label style="display:flex;align-items:flex-start;gap:10px;padding:14px;background:#fffbeb;border:2px solid #f59e0b;border-radius:10px;margin-bottom:14px;">
+<input type="checkbox" name="is_last" value="1" required style="width:22px;height:22px;margin-top:2px;">
+<span style="font-size:14px;line-height:1.4;"><b>I am the LAST teacher.</b><br>Tick to confirm I have checked all marks. This will publish ALL subjects together and send ONE SMS to parents.</span>
 </label>
 
-<button type="submit" style="width:100%;padding:14px;background:#dc2626;color:white;border:none;border-radius:8px;font-weight:bold;font-size:16px;">
-🚀 PUBLISH ALL RESULTS - Send SMS to Parents
+<button type="submit" style="width:100%;padding:15px;background:#dc2626;color:white;border:none;border-radius:10px;font-weight:bold;font-size:16px;">
+🚀 PUBLISH ALL RESULTS
 </button>
 </form>
 
-<p style="text-align:center;color:#666;font-size:13px;margin-top:12px;">Publishing will make results visible to parents for {{grade}} {{term}} and send ONE SMS per pupil.</p>
+<p style="text-align:center;color:#888;font-size:12px;margin-top:15px;">Publishing makes results visible to parents for {{grade}} {{term}}</p>
 </div>
 {% endblock %}
