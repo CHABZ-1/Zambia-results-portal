@@ -1,1 +1,9 @@
-
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard</title>
+<style>body{font-family:Arial;margin:0;background:#f2f2f2}.top{background:#0a3d2e;color:#fff;padding:15px;display:flex;justify-content:space-between}.card{background:#fff;margin:15px;padding:15px;border-radius:10px}input{padding:10px;margin:5px;width:90%}button{padding:10px;background:#0a3d2e;color:#fff;border:none;border-radius:6px}</style></head>
+<body><div class="top"><b>Welcome {{name}} ({{role}})</b><a href="/logout" style="color:#fff">Logout</a></div>
+{% if is_staff %}
+<div class="card"><h3>Add Pupil (Only Staff)</h3><form action="/add_pupil" method="POST"><input name="exam_no" placeholder="Exam No e.g MK2026001" required><input name="name" placeholder="Full Name" required><input name="phone" placeholder="Parent Phone e.g 0977123456" required><button>Add Pupil - Password = Last 4 of phone</button></form></div>
+<div class="card"><h3>Add Result</h3><form action="/add_result" method="POST"><input name="exam_no" placeholder="Exam No" required><input name="subjects" placeholder="Maths:78, English:85" required><input name="gpa" placeholder="GPA e.g 3.5"><input name="grade" placeholder="Grade e.g A"><button>Publish Result + Generate Code</button></form></div>
+{% endif %}
+<div class="card"><h3>Results</h3>{% for r in results %}{% if r %}<p><b>{{r['pupil_name']}} - {{r['exam_no']}}</b><br>Subjects: {{r['subjects']}}<br>GPA: {{r['gpa']}} | Grade: {{r['grade']}}<br>✅ Verification Code: <b>{{r['verification_code']}}</b><br>Verify at: /verify/{{r['verification_code']}}</p><hr>{% endif %}{% else %}<p>No results yet.</p>{% endfor %}</div>
+</body></html>
