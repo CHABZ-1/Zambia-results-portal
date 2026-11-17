@@ -1,1 +1,4 @@
-
+<!DOCTYPE html><html><body style="font-family:Arial;text-align:center;padding:40px">
+{% if valid %}<h2 style="color:green">✅ VALID RESULT</h2><p>Exam No: {{r['exam_no']}}<br>Name: {{r['pupil_name']}}<br>Subjects: {{r['subjects']}}<br>GPA: {{r['gpa']}} | Grade: {{r['grade']}}<br>Code: {{r['verification_code']}}</p><b>Verified by Mkushi Boarding Secondary</b>
+{% else %}<h2 style="color:red">❌ INVALID / FORGED DOCUMENT</h2><p>This code does not exist in school records.</p>{% endif %}
+</body></html>
