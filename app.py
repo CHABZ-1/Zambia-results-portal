@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, session, abort
+import sqlite3, os, secrets
 from werkzeug.security import generate_password_hash, check_password_hash
-import sqlite3, os
 
 app = Flask(__name__)
-app.secret_key = "mkushi-boarding-secret-2024"
-DB = "mkushi.db"
+app.secret_key = 'mkushi-2026-secure-key-change-this'
+
+DB = 'mkushi.db'
 
 def get_db():
     conn = sqlite3.connect(DB)
@@ -14,124 +15,124 @@ def get_db():
 def init_db():
     conn = get_db()
     conn.execute('''CREATE TABLE IF NOT EXISTS users 
-    (id INTEGER PRIMARY KEY, username TEXT UNIQUE, email TEXT, password TEXT, role TEXT)''')
-    # Create default users if not exist
+    (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password TEXT, role TEXT)''')
+    conn.execute('''CREATE TABLE IF NOT EXISTS pupils
+    (id INTEGER PRIMARY KEY, exam_no TEXT UNIQUE, full_name TEXT, grade TEXT, class_sec TEXT, parent_phone TEXT)''')
+    conn.execute('''CREATE TABLE IF NOT EXISTS results
+    (id INTEGER PRIMARY KEY, exam_no TEXT UNIQUE, subjects TEXT, gpa REAL, verification_code TEXT UNIQUE, created_by TEXT)''')
+    # Create default admin if not exists
     cur = conn.execute("SELECT * FROM users WHERE username='admin'")
     if not cur.fetchone():
-        conn.execute("INSERT INTO users (username,email,password,role) VALUES (?,?,?,?)",
-        ("admin","chabotamichelo17@gmail.com",generate_password_hash("admin123"),"admin"))
-        conn.execute("INSERT INTO users (username,email,password,role) VALUES (?,?,?,?)",
-        ("teacher1","teacher@test.com",generate_password_hash("teacher123"),"teacher"))
-        conn.execute("INSERT INTO users (username,email,password,role) VALUES (?,?,?,?)",
-        ("parent1","parent@test.com",generate_password_hash("parent123"),"parent"))
-        conn.execute("INSERT INTO users (username,email,password,role) VALUES (?,?,?,?)",
-        ("pupil1","pupil@test.com",generate_password_hash("pupil123"),"pupil"))
-        conn.commit()
+        conn.execute("INSERT INTO users (username,password,role) VALUES (?,?,?)",
+                     ('admin', generate_password_hash('Admin@123'), 'admin'))
+    conn.commit()
     conn.close()
 
 init_db()
 
-@app.route("/", methods=["GET","POST"])
+@app.route('/')
+def home(): return redirect('/login')
+
+@app.route('/login', methods=['GET','POST'])
 def login():
-    if request.method=="POST":
-        role = request.form.get("role","admin")
-        # For admin/teacher - username/password
-        if role in ["admin","teacher"]:
-            username = request.form.get("username")
-            password = request.form.get("password")
-            conn=get_db()
-            user=conn.execute("SELECT * FROM users WHERE username=? AND role=?",(username,role)).fetchone()
+    if request.method == 'POST':
+        role = request.form.get('role')
+        if role in ['admin','teacher']:
+            u = request.form.get('username')
+            p = request.form.get('password')
+            conn = get_db()
+            user = conn.execute("SELECT * FROM users WHERE username=?", (u,)).fetchone()
             conn.close()
-            if user and check_password_hash(user["password"], password):
-                session["username"]=user["username"]
-                session["role"]=user["role"]
-                if role=="admin": return redirect("/admin")
-                else: return redirect("/teacher")
-            flash("Invalid username or password","danger")
-        else:
-            # For parent/pupil - simple demo login
-            child_name=request.form.get("child_name")
-            if child_name:
-                session["username"]=child_name
-                session["role"]=role
-                if role=="parent": return redirect("/parent")
-                else: return redirect("/pupil")
-            flash("Please enter child name","danger")
-    return render_template("login.html")
+            if user and check_password_hash(user['password'], p):
+                session['user'] = u
+                session['role'] = user['role']
+                return redirect('/dashboard')
+            return "Wrong password"
+        elif role == 'parent':
+            exam_no = request.form.get('child_name').strip() # We use this field for exam_no now
+            grade = request.form.get('grade','').strip()
+            conn = get_db()
+            pupil = conn.execute("SELECT * FROM pupils WHERE exam_no=?", (exam_no,)).fetchone()
+            conn.close()
+            if pupil:
+                session['exam_no'] = exam_no
+                return redirect(f'/result/{exam_no}')
+            return "Exam Number not found. Contact school."
+        elif role == 'pupil':
+            exam_no = request.form.get('child_name').strip()
+            conn = get_db()
+            pupil = conn.execute("SELECT * FROM pupils WHERE exam_no=?", (exam_no,)).fetchone()
+            conn.close()
+            if pupil:
+                session['exam_no'] = exam_no
+                return redirect(f'/result/{exam_no}')
+            return "Exam Number not found"
+    return render_template('login.html')
 
-@app.route("/admin")
-def admin():
-    if session.get("role")!="admin": return redirect("/")
-    conn=get_db()
-    users=conn.execute("SELECT * FROM users").fetchall()
+@app.route('/dashboard')
+def dashboard():
+    if 'user' not in session: return redirect('/login')
+    conn = get_db()
+    pupils = conn.execute("SELECT * FROM pupils").fetchall()
+    results = conn.execute("SELECT pupils.full_name, pupils.exam_no, pupils.grade, results.gpa, results.verification_code FROM pupils LEFT JOIN results ON pupils.exam_no = results.exam_no").fetchall()
     conn.close()
-    return render_template("admin_dashboard.html", users=users)
+    return render_template('dashboard.html', pupils=pupils, results=results, user=session['user'])
 
-@app.route("/add_user", methods=["POST"])
-def add_user():
-    if session.get("role")!="admin": return redirect("/")
-    username=request.form.get("username")
-    email=request.form.get("email")
-    password=request.form.get("password")
-    role=request.form.get("role","teacher")
-    if username and password:
-        try:
-            conn=get_db()
-            conn.execute("INSERT INTO users (username,email,password,role) VALUES (?,?,?,?)",
-            (username,email,generate_password_hash(password),role))
-            conn.commit()
-            conn.close()
-            flash(f"{role} {username} added successfully!","success")
-        except:
-            flash("Username already exists","danger")
-    return redirect("/admin")
-
-@app.route("/reset_password", methods=["POST"])
-def reset_password():
-    if session.get("role")!="admin": return redirect("/")
-    username=request.form.get("username")
-    new_password=request.form.get("new_password")
-    if username and new_password:
-        conn=get_db()
-        conn.execute("UPDATE users SET password=? WHERE username=?",
-        (generate_password_hash(new_password), username))
+@app.route('/add_pupil', methods=['POST'])
+def add_pupil():
+    if 'user' not in session: return redirect('/login')
+    exam_no = request.form.get('exam_no').upper().strip()
+    name = request.form.get('full_name')
+    grade = request.form.get('grade')
+    sec = request.form.get('class_sec')
+    phone = request.form.get('parent_phone')
+    conn = get_db()
+    try:
+        conn.execute("INSERT INTO pupils (exam_no,full_name,grade,class_sec,parent_phone) VALUES (?,?,?,?,?)",
+                     (exam_no,name,grade,sec,phone))
         conn.commit()
-        conn.close()
-        flash(f"Password reset for {username}","success")
-    return redirect("/admin")
+    except: pass
+    conn.close()
+    return redirect('/dashboard')
 
-@app.route("/change_password", methods=["POST"])
-def change_password():
-    username=session.get("username")
-    new_password=request.form.get("new_password")
-    if username and new_password:
-        conn=get_db()
-        conn.execute("UPDATE users SET password=? WHERE username=?",
-        (generate_password_hash(new_password), username))
+@app.route('/add_result', methods=['POST'])
+def add_result():
+    if 'user' not in session: return redirect('/login')
+    exam_no = request.form.get('exam_no').upper().strip()
+    subjects = request.form.get('subjects')
+    gpa = request.form.get('gpa')
+    code = secrets.token_hex(3).upper() # e.g A7F9K2 - anti-forgery
+    conn = get_db()
+    try:
+        conn.execute("INSERT OR REPLACE INTO results (exam_no,subjects,gpa,verification_code,created_by) VALUES (?,?,?,?,?)",
+                     (exam_no,subjects,gpa,code,session['user']))
         conn.commit()
-        conn.close()
-        flash("Password changed","success")
-    return redirect("/admin")
+    except Exception as e:
+        print(e)
+    conn.close()
+    return redirect('/dashboard')
 
-@app.route("/teacher")
-def teacher():
-    if session.get("role") not in ["teacher","admin"]: return redirect("/")
-    return render_template("teacher.html")
+@app.route('/result/<exam_no>')
+def result_page(exam_no):
+    conn = get_db()
+    pupil = conn.execute("SELECT * FROM pupils WHERE exam_no=?", (exam_no,)).fetchone()
+    res = conn.execute("SELECT * FROM results WHERE exam_no=?", (exam_no,)).fetchone()
+    conn.close()
+    if not pupil: abort(404)
+    return render_template('result.html', pupil=pupil, result=res)
 
-@app.route("/parent")
-def parent():
-    if session.get("role") not in ["parent","admin"]: return redirect("/")
-    return render_template("parent.html")
+@app.route('/verify/<code>')
+def verify(code):
+    conn = get_db()
+    r = conn.execute("SELECT pupils.full_name, pupils.exam_no, results.gpa, results.verification_code FROM results JOIN pupils ON results.exam_no = pupils.exam_no WHERE verification_code=?", (code,)).fetchone()
+    conn.close()
+    if r:
+        return f"<div style='font-family:Arial;padding:30px;text-align:center'><h2 style='color:green'>✓ VALID DOCUMENT</h2><p>Exam No: {r['exam_no']}<br>Name: {r['full_name']}<br>GPA: {r['gpa']}<br>Code: {r['verification_code']}<br><b>Verified by Mkushi Boarding Secondary School Board</b></p></div>"
+    return "<h2 style='color:red;text-align:center;padding:30px'>✗ INVALID / FORGED DOCUMENT</h2>", 404
 
-@app.route("/pupil")
-def pupil():
-    if session.get("role") not in ["pupil","admin"]: return redirect("/")
-    return render_template("pupil.html")
+@app.route('/sitemap.xml')
+def sitemap():
+    return """<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://m-results-portal.onrender.com/login</loc></url><url><loc>https://m-results-portal.onrender.com/verify</loc></url></urlset>""", 200, {'Content-Type':'application/xml'}
 
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect("/")
-
-if __name__=="__main__":
+if __name__ == '__main__':
     app.run(debug=True)
